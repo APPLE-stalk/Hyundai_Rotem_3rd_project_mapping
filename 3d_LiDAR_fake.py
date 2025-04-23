@@ -79,6 +79,17 @@ plotter.show_bounds(
 )
 plotter.show()
 
+# commit test
+# commit test2
+# hhhh branch from commit test2
+# hhhh branch from commit test2 2
+
 
 # 원래대로 돌아와 봤음
 # 수정 또 수정
+
+#jflsjdlfjlks
+# from_commit_test2_from에서 수정
+
+# 지금 from_commit_test2_from 브런치이다
+
