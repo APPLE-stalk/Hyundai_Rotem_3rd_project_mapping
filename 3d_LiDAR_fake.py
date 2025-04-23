@@ -86,3 +86,5 @@ plotter.show()
 
 #jflsjdlfjlks
 # from_commit_test2_from에서 수정
+
+# 지금 from_commit_test2_from 브런치이다
