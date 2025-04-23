@@ -12,64 +12,89 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D # 3차원 시각화
 import pyvista as pv # GPU 가속화하여 3D 시각화
 
+from collections import defaultdict # voxel 제작에 사용
+
 # json 파일들 경로
 lidar_data_folder = './lidar_data_10'#'C:/Users/pizza/Documents/Tank Challenge/lidar_data'
 csv_files = glob.glob(os.path.join(lidar_data_folder, '*.csv'))
 
-global_point_cloudes = []
+global_point_clouds = []
 for f in csv_files: # 파일 열기
-    # print(f) # f는 csv 파일 절대주소
     
     with open(f, mode='r', newline='') as file: # csv파일 1개씩 열기
         reader = csv.DictReader(file)
-        # scan = []
+        
         for row in reader: # 360줄 중 한 줄 씩 읽기
-            # print(row)
-            # print('hi')
             x = float(row['x'])
             y = float(row['y'])
             z = float(row['z'])
             t = str(row['isDetected'])
             
             if(t == 'True'): # detect 된 경우만 읽어들이기
-                global_point_cloudes.append((x, y, z))
-# print(len(global_point_cloudes))
-# print(global_point_cloudes[0])
+                global_point_clouds.append((x, y, z))
+# print(len(global_point_clouds))
+# print(global_point_clouds[0])
+# raw data --> (59.35704, 8.002197, 32.08697)
 
-
-global_point_cloudes = [tuple(round(coord, 1) for coord in point) for point in global_point_cloudes]
+global_point_clouds = [tuple(round(coord, 1) for coord in point) for point in global_point_clouds]
 # 리스트 → 넘파이 배열 변환
-global_point_cloudes = np.array(global_point_cloudes)
+global_point_clouds = np.array(global_point_clouds)
 
-converted_points = np.zeros_like(global_point_cloudes)
-converted_points[:, 0] = global_point_cloudes[:, 0]        # X 그대로
-converted_points[:, 1] = global_point_cloudes[:, 2]       # Z 뒤집어서 Y에 대응
-converted_points[:, 2] = global_point_cloudes[:, 1]        # Y를 Z로 대응
-# # Create the 3D plot
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
-# # ax.scatter(x, y, z)  # Plot the single point
-# for(x, y, z) in global_point_cloudes:
-#     ax.plot(x, z, y, linestyle='', marker='.', markersize=2, color='blue')
+converted_points = np.zeros_like(global_point_clouds)
+converted_points[:, 0] = global_point_clouds[:, 0]        # X
+converted_points[:, 1] = global_point_clouds[:, 2]        # Y자리에 Z 넣음
+converted_points[:, 2] = global_point_clouds[:, 1]        # Z자리에 Y 넣음
 
 
+# cloud = pv.PolyData(converted_points)
+# plotter = pv.Plotter()
+# plotter.add_mesh(cloud, point_size=3, render_points_as_spheres=True)
+# # 축 라벨 추가
+# plotter.add_axes()
+# plotter.show_axes()  # 축 방향 위젯
+# plotter.show_bounds(
+#     grid='front', location='outer', all_edges=True,
+#     xtitle='X Axis', ytitle='Y Axis', ztitle='Z Axis'
+# )
+# plotter.show()
 
-# # Label axes for clarity
-# ax.set_xlabel('X')
-# ax.set_ylabel('z')
-# ax.set_zlabel('Y')
 
-# # Optional: Set equal aspect ratio for all axes
-# ax.set_xlim([0, 120]) # x축
-# ax.set_ylim([0, 70]) # z축
-# ax.set_zlim([0, 100]) # y축
+# PCL(Point Cloud Library) 없이 vexel 만드는 코드
+def create_voxel_occupancy_map(points, voxel_size):
+    """
+    points: (N, 3) np.ndarray - global point cloud
+    voxel_size: float - 크기 (ex: 0.2m)
+    
+    return:
+        occupancy: set of voxel indices (x, y, z)
+    """
+    voxel_indices = np.floor(points / voxel_size).astype(int)
+    occupancy = set(map(tuple, voxel_indices))  # 중복 제거
+    return occupancy
 
-# plt.title("3D Point Visualization")
-# plt.show()
+# point cloud는 (N, 3) numpy 배열이어야 함
+voxel_size = 0.5  # 1:1m, 0.1:10cm 크기의 큐브
+occupancy_map = create_voxel_occupancy_map(global_point_clouds, voxel_size)
 
-cloud = pv.PolyData(converted_points)
+print(f"점유된 voxel 수: {len(occupancy_map)}")
+
+voxels = []
+for x, y, z in occupancy_map:
+    center = np.array([x, z, y]) * voxel_size + voxel_size / 2
+    # *voxel_size: [0.1m] -> [m] 단위로 변환
+    # (1, 2, 3) -> 직육면체의 좌측 하단 모서리이다. + vexel_size/2 => 직육면체의 중심으로 이동함
+    # y, z 바꿔서 넣기
+    cube = pv.Cube(center=center, x_length=voxel_size, y_length=voxel_size, z_length=voxel_size)
+    # 중심, 크기 지정하면 Cube 생성해 줌
+    voxels.append(cube)
+
+# 모든 큐브 합치기
+map_mesh = pv.MultiBlock(voxels).combine() 
+# 여러 mesh 객체(블록)를 하나의 묶음으로 처리하는 PyVista의 컨테이너 클래스
+# combine(): 여러개의 cube를 단일 mesh로 병합
+# 성능개선: 100개 따로 랜더링 vs 하나로 랜더링
 plotter = pv.Plotter()
-plotter.add_mesh(cloud, point_size=3, render_points_as_spheres=True)
+plotter.add_mesh(map_mesh, color='gray', opacity=1) # 색갈, 투명도
 # 축 라벨 추가
 plotter.add_axes()
 plotter.show_axes()  # 축 방향 위젯
@@ -78,6 +103,3 @@ plotter.show_bounds(
     xtitle='X Axis', ytitle='Y Axis', ztitle='Z Axis'
 )
 plotter.show()
-
-
-# username 수정해봄
