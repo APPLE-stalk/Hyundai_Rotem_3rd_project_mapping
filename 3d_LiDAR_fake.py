@@ -79,4 +79,3 @@ plotter.show_bounds(
 )
 plotter.show()
 
-# main_copy라는 실험실 만들어서 실험 중
