@@ -13,7 +13,7 @@ from mpl_toolkits.mplot3d import Axes3D # 3차원 시각화
 import pyvista as pv # GPU 가속화하여 3D 시각화
 
 # json 파일들 경로
-lidar_data_folder = './lidar_data'#'C:/Users/pizza/Documents/Tank Challenge/lidar_data'
+lidar_data_folder = './lidar_data_10'#'C:/Users/pizza/Documents/Tank Challenge/lidar_data'
 csv_files = glob.glob(os.path.join(lidar_data_folder, '*.csv'))
 
 global_point_cloudes = []
