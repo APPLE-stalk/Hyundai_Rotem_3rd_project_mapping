@@ -16,7 +16,7 @@ from collections import defaultdict # voxel 제작에 사용
 import open3d as o3d # downsampling & outlier 제거
 
 # json 파일들 경로
-lidar_data_folder = './lidar_data_10'#'C:/Users/pizza/Documents/Tank Challenge/lidar_data'
+lidar_data_folder = '../lidar_data(100_100)'#'C:/Users/pizza/Documents/Tank Challenge/lidar_data'
 csv_files = glob.glob(os.path.join(lidar_data_folder, '*.csv'))
 
 global_point_cloud = []
@@ -79,7 +79,7 @@ voxel_size = 0.5  # 1:1m, 0.1:10cm 크기의 큐브
 occupancy_map = create_voxel_occupancy_map(global_point_cloud, voxel_size)
 
 print(f"점유된 voxel 수: {len(occupancy_map)}")
-
+print('vexels 만드는 중...')
 voxels = []
 for x, y, z in occupancy_map:
     center = np.array([x, z, y]) * voxel_size + voxel_size / 2
@@ -89,13 +89,16 @@ for x, y, z in occupancy_map:
     cube = pv.Cube(center=center, x_length=voxel_size, y_length=voxel_size, z_length=voxel_size)
     # 중심, 크기 지정하면 Cube 생성해 줌
     voxels.append(cube)
+print('vexels 만들기 완료')
+
 
 # 모든 큐브 합치기
+print('vexels 합쳐서 mesh 만드는 중...')
 map_mesh = pv.MultiBlock(voxels).combine() 
 # 여러 mesh 객체(블록)를 하나의 묶음으로 처리하는 PyVista의 컨테이너 클래스
 # combine(): 여러개의 cube를 단일 mesh로 병합
 # 성능개선: 100개 따로 랜더링 vs 하나로 랜더링
-
+print('mesh 만들기 완료')
 # map_mesh파일을 저장하기
-map_mesh.save("voxel_map_0.5.vtk")  # 또는 .ply, .obj, .vtp
+map_mesh.save("voxel_map_(100_100)_0.5.vtk")  # 또는 .ply, .obj, .vtp
 

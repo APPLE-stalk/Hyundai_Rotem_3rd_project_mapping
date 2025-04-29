@@ -16,7 +16,7 @@ from collections import defaultdict # voxel 제작에 사용
 import open3d as o3d # downsampling & outlier 제거
 
 
-lidar_data_folder = '../lidar_data_10'#'C:/Users/pizza/Documents/Tank Challenge/lidar_data'
+lidar_data_folder = '../lidar_data(100_100)'#'C:/Users/pizza/Documents/Tank Challenge/lidar_data'
 csv_files = glob.glob(os.path.join(lidar_data_folder, '*.csv'))
 
 global_point_cloud = []
@@ -68,7 +68,7 @@ pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=20, std_ratio=2.0)
 # 평균거리 > (전체 평균거리 + std_ration*표준편차) 인 점들을 outlier로 간주하고 제거
 
 # point clouds저장
-o3d.io.write_point_cloud("downsampling_outliner_point_cloud.ply", pcd)
+o3d.io.write_point_cloud("downsampling_outliner_point_cloud_(100_100)_1.0.ply", pcd)
 
 
 
@@ -78,6 +78,6 @@ voxel_size = 0.5  # 원하는 voxel 크기 지정 (단위: meter)
 voxel_grid = o3d.geometry.VoxelGrid.create_from_point_cloud(pcd, voxel_size=voxel_size)
 
 # 3. 시각화
-o3d.visualization.draw_geometries([voxel_grid])
+# o3d.visualization.draw_geometries([voxel_grid])
 
 

@@ -4,10 +4,10 @@ import pyvista as pv
 
 import open3d as o3d
 # point cloud ply파일 불러오기 파일 불러오기
-pcd = o3d.io.read_point_cloud("downsampling_outliner_point_cloud.ply")
+pcd = o3d.io.read_point_cloud("downsampling_outliner_point_cloud_(100_100)_1.0.ply")
 
 # point cloud 시각화
-# o3d.visualization.draw_geometries([pcd])
+o3d.visualization.draw_geometries([pcd])
 
 
 # point to voxel로 변환 무지개
