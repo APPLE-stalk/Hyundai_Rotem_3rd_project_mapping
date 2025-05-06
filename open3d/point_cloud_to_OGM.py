@@ -50,10 +50,10 @@ global_point_cloud = np.array(global_point_cloud)
 
 
 
-converted_points = np.zeros_like(global_point_cloud)                                             # /\/\/\/\/\/\/\ 시각화 위해 축 변환 /\/\/\/\/\/\/\
-converted_points[:, 0] = global_point_cloud[:, 0]        
-converted_points[:, 1] = global_point_cloud[:, 2]        
-converted_points[:, 2] = global_point_cloud[:, 1] 
+converted_points = np.zeros_like(global_point_cloud)                                             
+converted_points[:, 0] = global_point_cloud[:, 0]   # 우     
+converted_points[:, 1] = global_point_cloud[:, 2]   # 전방   
+converted_points[:, 2] = global_point_cloud[:, 1]   # 높이
 ed_time = time.perf_counter()
 print(f'point cloud 전처리에 걸리는 시간: {ed_time - st_time:.6f}초')
 
@@ -62,7 +62,7 @@ print(f'point cloud 전처리에 걸리는 시간: {ed_time - st_time:.6f}초')
 # ====================  point cloud 객체 생성  ====================
 st_time = time.perf_counter()
 pcd = o3d.geometry.PointCloud()                                 # open 3d 이용하여 points 객체 생성
-pcd.points = o3d.utility.Vector3dVector(global_point_cloud)     # open3d 내부에서 처리 가능한 포인트 벡터로 변환
+pcd.points = o3d.utility.Vector3dVector(converted_points)       # open3d 내부에서 처리 가능한 포인트 벡터로 변환
 
 
 
