@@ -3,8 +3,10 @@ import open3d as o3d
 
 
 # point cloud ply파일 불러오기 파일 불러오기
-pcd = o3d.io.read_point_cloud("./pc/flat(100x100)_pc(0.5x0.5)_downsampling_outliner_rm_visual.ply")
+# pcd = o3d.io.read_point_cloud("./pc/flat(100x100)_pc(0.5x0.5)_downsampling_outliner_rm_visual.ply")
 # pcd = o3d.io.read_point_cloud("./pc/flat(100x100)_pc(0.5x0.5)_visual.ply")
+pcd = o3d.io.read_point_cloud("./pc/flat(100x100)_pc(0.5x0.5)_downsampling_outliner_rm_visual.ply")
+# pcd = o3d.io.read_point_cloud("./pc/flat(100x100)_pc(0.5x0.5)_downsampling_outliner_rm_LH.ply")
 
 
 # point cloud 시각화
