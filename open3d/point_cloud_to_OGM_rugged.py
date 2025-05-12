@@ -58,6 +58,7 @@ def build_ogm_top(voxels, origin, voxel_size, nx, nz,
     return ogm            # 0 = free, 1 = obstacle
 
 
+
 # ==================== LiDAR log .csv 불러와 데이터 읽기  ====================
 st_time = time.perf_counter()
 # lidar_data_path = '../lidar_data(100_100)'      
